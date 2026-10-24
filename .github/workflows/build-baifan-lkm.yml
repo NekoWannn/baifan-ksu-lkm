@@ -5,10 +5,16 @@ on:
 
 jobs:
   build:
-    name: Build kernelsu.ko (android15-6.6)
+    name: Build kernelsu.ko (${{ matrix.kmi }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        kmi:
+          - android15-6.6
+          - android16-6.12
     container:
-      image: ghcr.io/ylarod/ddk-min:android15-6.6-20260828
+      image: ghcr.io/ylarod/ddk-min:${{ matrix.kmi }}-20260828
       options: --privileged
 
     steps:
@@ -27,12 +33,13 @@ jobs:
             KSU_EXPECTED_HASH2=c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6 \
             KSU_MANAGER_PACKAGE=me.weishu.kernelsu
 
-          cp kernelsu.ko "$GITHUB_WORKSPACE/kernelsu-android15-6.6-baifan.ko"
-          llvm-strip -d "$GITHUB_WORKSPACE/kernelsu-android15-6.6-baifan.ko" || true
-          ls -lh "$GITHUB_WORKSPACE/kernelsu-android15-6.6-baifan.ko"
+          OUT="$GITHUB_WORKSPACE/kernelsu-${{ matrix.kmi }}-baifan.ko"
+          cp kernelsu.ko "$OUT"
+          llvm-strip -d "$OUT" || true
+          ls -lh "$OUT"
 
       - name: Upload kernelsu.ko
         uses: actions/upload-artifact@v4
         with:
-          name: kernelsu-android15-6.6-baifan
-          path: kernelsu-android15-6.6-baifan.ko
+          name: kernelsu-${{ matrix.kmi }}-baifan
+          path: kernelsu-${{ matrix.kmi }}-baifan.ko
