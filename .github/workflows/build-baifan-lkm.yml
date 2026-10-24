@@ -13,6 +13,7 @@ jobs:
         kmi:
           - android15-6.6
           - android16-6.12
+          - android17-6.18
     container:
       image: ghcr.io/ylarod/ddk-min:${{ matrix.kmi }}-20260828
       options: --privileged
