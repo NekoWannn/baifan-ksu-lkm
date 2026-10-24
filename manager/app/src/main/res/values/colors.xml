@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#FFE5EEFF</color>
+    <color name="ic_launcher_foreground">#FF1E110D</color>
+    <color name="ic_splash_background">#FF4D6BFE</color>
+    <color name="deepseek_blue">#FF4D6BFE</color>
+    <color name="deepseek_bg_light">#FFEAF0FF</color>
+    <color name="deepseek_bg_dark">#FF0B1226</color>
+</resources>

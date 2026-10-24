@@ -1,36 +1,50 @@
-# Baifan KernelSU LKM
+# 大肥鱼KSU LKM
 
-Private build of `kernelsu.ko` for the Baifan-themed manager.
+配合大肥鱼KSU 管理器使用的自定义 `kernelsu.ko`。
 
-## Target
+## 支持范围
 
-- KMI: `android15-6.6`
-- KernelSU source: v3.3.0
-- Manager package: `me.weishu.kernelsu`
-- Build workflow: `.github/workflows/build-baifan-lkm.yml`
+- `android15-6.6`
+- `android16-6.12`
+- `android17-6.18`
 
-## Manager signature
+构建工作流：`.github/workflows/build-baifan-lkm.yml`  
+KernelSU 源码：v3.3.1（`KSU_VERSION=32680`，UAPI 5）
 
-- APK signing: v2-only
-- Certificate: DER 825 bytes (`0x0339`)
-- SHA-256: `bad08be1f8e813067892adca0e70452cd645ba31e5ed15bec35e60fa430f2f48`
+## 为什么需要配套 LKM
 
-## Embedded signature values
+管理器使用自定义 v2-only 签名。KernelSU 内核会根据管理器签名决定是否信任当前 APK：
 
-```make
-KSU_EXPECTED_SIZE := 0x0339
-KSU_EXPECTED_HASH := bad08be1f8e813067892adca0e70452cd645ba31e5ed15bec35e60fa430f2f48
-KSU_EXPECTED_SIZE2 := 0x033b
-KSU_EXPECTED_HASH2 := c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6
-KSU_MANAGER_PACKAGE := me.weishu.kernelsu
+- 官方 **bundled LKM** 只信任官方管理器签名
+- 使用本仓库的 LKM 后，内核会信任大肥鱼KSU 的自定义签名
+
+## 管理器签名
+
+```text
+APK signing: v2-only
+Certificate DER: 825 bytes (0x0339)
+Certificate SHA-256: bad08be1f8e813067892adca0e70452cd645ba31e5ed15bec35e60fa430f2f48
+Manager package: me.weishu.kernelsu
 ```
 
-The second pair keeps the official manager signature accepted as a fallback.
+## 构建参数
 
-## Output
+```make
+KSU_GIT_VERSION=2680
+KSU_VERSION=32680
+KSU_EXPECTED_SIZE=0x0339
+KSU_EXPECTED_HASH=bad08be1f8e813067892adca0e70452cd645ba31e5ed15bec35e60fa430f2f48
+KSU_MANAGER_PACKAGE=me.weishu.kernelsu
+```
 
-GitHub Actions artifact:
+## 产物
 
 ```text
 kernelsu-android15-6.6-baifan.ko
+kernelsu-android16-6.12-baifan.ko
+kernelsu-android17-6.18-baifan.ko
 ```
+
+对应 Release：
+
+<https://github.com/NekoWannn/baifan-ksu-lkm/releases/tag/v3.3.1-baifan.11>
