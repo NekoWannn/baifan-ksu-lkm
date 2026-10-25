@@ -133,13 +133,17 @@ internal fun InstallScreenMaterial(
                             },
                             headlineContent = { Text(stringResource(R.string.install_upload_lkm_file)) },
                             supportingContent = {
-                                (uiState.lkmSelection as? LkmSelection.LkmUri)?.let {
-                                    Text(
+                                when (val selection = uiState.lkmSelection) {
+                                    is LkmSelection.LkmUri -> Text(
                                         stringResource(
                                             R.string.selected_lkm,
-                                            it.uri.lastPathSegment ?: "(file)"
+                                            selection.uri.lastPathSegment ?: "(file)"
                                         )
                                     )
+                                    is LkmSelection.Bundled -> Text(
+                                        stringResource(R.string.install_bundled_lkm)
+                                    )
+                                    else -> Unit
                                 }
                             },
                             trailingContent = {

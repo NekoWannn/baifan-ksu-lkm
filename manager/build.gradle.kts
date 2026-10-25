@@ -23,7 +23,7 @@ fun getGitCommitCount(): Int = runCatching {
 fun getGitDescribe(): String = runCatching {
     val process = Runtime.getRuntime().exec(arrayOf("git", "describe", "--tags", "--always"))
     process.inputStream.bufferedReader().use { it.readText().trim() }
-}.getOrDefault("v3.3.1-baifan.11")
+}.getOrDefault("v3.3.1-baifan.13")
 
 fun getVersionCode(): Int {
     val commitCount = getGitCommitCount()

@@ -47,4 +47,4 @@ kernelsu-android17-6.18-baifan.ko
 
 对应 Release：
 
-<https://github.com/NekoWannn/baifan-ksu-lkm/releases/tag/v3.3.1-baifan.11>
+<https://github.com/NekoWannn/baifan-ksu-lkm/releases/tag/v3.3.1-baifan.13>

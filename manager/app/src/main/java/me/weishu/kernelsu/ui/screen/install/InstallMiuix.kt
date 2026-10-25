@@ -199,8 +199,13 @@ internal fun InstallScreenMiuix(
                     ) {
                         BasicComponent(
                             title = stringResource(id = R.string.install_upload_lkm_file),
-                            summary = (uiState.lkmSelection as? LkmSelection.LkmUri)?.let {
-                                stringResource(id = R.string.selected_lkm, it.uri.lastPathSegment ?: "(file)")
+                            summary = when (val selection = uiState.lkmSelection) {
+                                is LkmSelection.LkmUri -> stringResource(
+                                    id = R.string.selected_lkm,
+                                    selection.uri.lastPathSegment ?: "(file)"
+                                )
+                                is LkmSelection.Bundled -> stringResource(R.string.install_bundled_lkm)
+                                else -> null
                             },
                             onClick = actions.onUploadLkm,
                             startAction = {

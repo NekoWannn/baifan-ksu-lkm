@@ -253,7 +253,7 @@
     <string name="jailbreak_flash_warning_countdown">Continue (%1$d)</string>
     <string name="install_next">Next</string>
     <string name="install_select_partition">Select partition</string>
-    <string name="install_upload_lkm_file">Use local LKM file</string>
+    <string name="install_upload_lkm_file">LKM (bundled by default, optional override)</string>
     <string name="install_force_backup">Backup as stock image</string>
     <string name="install_force_backup_summary">Please make sure your selected boot image is a stock image</string>
     <string name="install_only_support_ko_file">Only .ko files are supported</string>
@@ -270,6 +270,7 @@
     <string name="flash_success">Flash success</string>
     <string name="flash_failed">Flash failed</string>
     <string name="selected_lkm">Selected LKM: %s</string>
+    <string name="install_bundled_lkm">Bundled Dafeiyu LKM enabled (no import needed)</string>
     <string name="save_log">Save logs</string>
     <string name="log_saved">Logs saved</string>
     <string name="settings_sucompat">Classic SU command</string>

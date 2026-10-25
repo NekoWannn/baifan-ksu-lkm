@@ -60,7 +60,7 @@ fun InstallScreen() {
     var downloadDialogShown by rememberSaveable { mutableStateOf(false) }
     var remotePartitions by rememberSaveable { mutableStateOf(emptyList<String>()) }
     var remotePartitionSelectionIndex by rememberSaveable { mutableIntStateOf(0) }
-    var lkmSelection by rememberSaveable { mutableStateOf<LkmSelection>(LkmSelection.KmiNone) }
+    var lkmSelection by rememberSaveable { mutableStateOf<LkmSelection>(LkmSelection.Bundled()) }
     var partitionSelectionIndex by rememberSaveable { mutableIntStateOf(0) }
     var hasCustomSelected by rememberSaveable { mutableStateOf(false) }
     val showChooseKmiDialog = rememberSaveable { mutableStateOf(false) }
@@ -227,7 +227,7 @@ fun InstallScreen() {
                 if (isKoFile(context, uri)) {
                     lkmSelection = LkmSelection.LkmUri(uri)
                 } else {
-                    lkmSelection = LkmSelection.KmiNone
+                    lkmSelection = LkmSelection.Bundled()
                     showMessage(resources.getString(R.string.install_only_support_ko_file))
                 }
             }
@@ -275,7 +275,7 @@ fun InstallScreen() {
         onUploadLkm = {
             selectLkmLauncher.launch(Intent(Intent.ACTION_GET_CONTENT).apply { type = "application/octet-stream" })
         },
-        onClearLkm = { lkmSelection = LkmSelection.KmiNone },
+        onClearLkm = { lkmSelection = LkmSelection.Bundled() },
         onSelectPartition = { index ->
             hasCustomSelected = true
             val method = installMethod
@@ -287,20 +287,9 @@ fun InstallScreen() {
             }
         },
         onNext = {
-            val isLkmSelected = lkmSelection != LkmSelection.KmiNone
-            val isKmiUnknown = currentKmi.isBlank()
-            val isKmiUnresolved = when (installMethod) {
-                // The download flow extracts the KMI itself; no manual
-                // selection needed.
-                is InstallMethod.DownloadFile -> false
-                is InstallMethod.SelectFile -> true
-                else -> isKmiUnknown
-            }
-            if (!isLkmSelected && isKmiUnresolved) {
-                showChooseKmiDialog.value = true
-            } else {
-                onInstall()
-            }
+            // The custom LKM is bundled in the APK and selected by default.
+            // No manual .ko import or KMI dialog is needed.
+            onInstall()
         },
         onAdvancedOptionsClicked = {
             advancedOptionsShown = !advancedOptionsShown

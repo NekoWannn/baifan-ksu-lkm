@@ -14,13 +14,13 @@
 
 | 项目 | 值 |
 | --- | --- |
-| 版本 | `v3.3.1-baifan.11 (32680-5)` |
+| 版本 | `v3.3.1-baifan.13 (32680-5)` |
 | 包名 | `me.weishu.kernelsu` |
-| 大小 | `14,911,566` 字节 |
-| SHA-256 | `6F8BDCAA62AF97B123BE2819FA4590CF70EB44C5E6D70AD929758C0A2F6EBCAC` |
+| 大小 | `15,214,891` 字节 |
+| SHA-256 | `7613876F9D282065C7D3601A2A5C083292062A55A58109E62E5342A274BAEDD4` |
 | 签名 | v2-only，自定义证书 |
 
-**[⬇ 下载 APK](https://github.com/NekoWannn/baifan-ksu-lkm/releases/download/v3.3.1-baifan.11/Dafeiyu_KSU_v3.3.1-baifan.11-v2.apk)**
+**[⬇ 下载 APK](https://github.com/NekoWannn/baifan-ksu-lkm/releases/download/v3.3.1-baifan.13/Dafeiyu_KSU_v3.3.1-baifan.13-v2.apk)**
 
 ### 配套 LKM
 
@@ -28,9 +28,9 @@
 
 | KMI | 文件 |
 | --- | --- |
-| android15-6.6 | [kernelsu-android15-6.6-baifan.ko](https://github.com/NekoWannn/baifan-ksu-lkm/releases/download/v3.3.1-baifan.11/kernelsu-android15-6.6-baifan.ko) |
-| android16-6.12 | [kernelsu-android16-6.12-baifan.ko](https://github.com/NekoWannn/baifan-ksu-lkm/releases/download/v3.3.1-baifan.11/kernelsu-android16-6.12-baifan.ko) |
-| android17-6.18 | [kernelsu-android17-6.18-baifan.ko](https://github.com/NekoWannn/baifan-ksu-lkm/releases/download/v3.3.1-baifan.11/kernelsu-android17-6.18-baifan.ko) |
+| android15-6.6 | [kernelsu-android15-6.6-baifan.ko](https://github.com/NekoWannn/baifan-ksu-lkm/releases/download/v3.3.1-baifan.13/kernelsu-android15-6.6-baifan.ko) |
+| android16-6.12 | [kernelsu-android16-6.12-baifan.ko](https://github.com/NekoWannn/baifan-ksu-lkm/releases/download/v3.3.1-baifan.13/kernelsu-android16-6.12-baifan.ko) |
+| android17-6.18 | [kernelsu-android17-6.18-baifan.ko](https://github.com/NekoWannn/baifan-ksu-lkm/releases/download/v3.3.1-baifan.13/kernelsu-android17-6.18-baifan.ko) |
 
 ## 界面
 
@@ -59,6 +59,10 @@
   - 顶部按钮圆形浅蓝底；超级用户右上角为胶囊遮罩
   - 模块卡片按钮配色：运行蓝、网页 UI 青、更新琥珀、卸载深蓝
   - 模块开关与“添加模块”按钮使用运行键蓝色
+- **免导入 LKM**
+  - APK 内置 `android15-6.6` / `android16-6.12` / `android17-6.18` 三个自定义 LKM
+  - 安装页默认“LKM（默认内置，可替换）”
+  - 按当前内核自动选择并执行 `boot-patch`，流程与官方管理器一致
 - **其它**
   - 应用名 **大肥鱼KSU**
   - 关于页渐变剪影图标
@@ -67,11 +71,13 @@
 
 ## 安装
 
-1. 确认设备已有可用的 KernelSU 环境（v3.3.1 / UAPI 5）。
-2. 安装 `Dafeiyu_KSU_v3.3.1-baifan.11-v2.apk`。
-3. 如果当前是官方 bundled LKM，刷入本仓库对应 KMI 的 `kernelsu-*-baifan.ko`，否则自定义管理器不会被内核信任。
-4. 重启后打开管理器，确认首页显示“工作中”和 `32680-5`。
+1. 安装 `Dafeiyu_KSU_v3.3.1-baifan.13-v2.apk`。
+2. 打开管理器 → 安装。
+3. 选择“直接安装”或“选择 boot/init_boot 镜像”。
+4. 保持默认的 **LKM（默认内置，可替换）**，点“下一步”。
+5. 管理器按内核自动选择内置 LKM 并刷写；重启后确认首页显示“工作中”和 `32680-5`。
 
+> 只有刷其它机型 / 其它 KMI 的镜像时，才需要手动替换本地 `.ko`。  
 > 升级管理器不会影响已保存的白饭 API Key；可在白饭页底部清除。
 
 ## 构建

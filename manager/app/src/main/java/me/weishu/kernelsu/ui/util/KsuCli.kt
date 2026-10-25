@@ -25,6 +25,7 @@ import me.weishu.kernelsu.core.utils.DataSourceChannel
 import me.weishu.kernelsu.data.registry.DownloadVerificationException
 import me.weishu.kernelsu.data.registry.RegistryDownloadStore
 import me.weishu.kernelsu.data.registry.copyForInstall
+import me.weishu.kernelsu.getKernelVersion
 import me.weishu.kernelsu.ksuApp
 import okhttp3.OkHttpClient
 import org.json.JSONArray
@@ -294,9 +295,45 @@ sealed class LkmSelection : Parcelable {
 
     @Parcelize
     data object KmiNone : LkmSelection()
+
+    /**
+     * Use the custom LKM bundled in the manager APK. This is the default:
+     * no separate .ko import is needed. The KMI is detected from the running
+     * kernel, or supplied by the boot image being patched.
+     */
+    @Parcelize
+    data class Bundled(val kmi: String = "") : LkmSelection()
+}
+
+private fun deviceKmi(): String {
+    val version = getKernelVersion()
+    return when {
+        version.patchLevel >= 18 -> "android17-6.18"
+        version.patchLevel >= 12 -> "android16-6.12"
+        version.patchLevel >= 6 -> "android15-6.6"
+        else -> ""
+    }
+}
+
+private fun bundledLkmAsset(kmi: String): String? {
+    val normalized = kmi.lowercase()
+    return when {
+        normalized.contains("6.18") -> "lkm/android17-6.18.ko"
+        normalized.contains("6.12") -> "lkm/android16-6.12.ko"
+        normalized.contains("6.6") -> "lkm/android15-6.6.ko"
+        else -> null
+    }
 }
 
 private fun writeLkmFile(lkm: LkmSelection): File? {
+    if (lkm is LkmSelection.Bundled) {
+        val asset = bundledLkmAsset(lkm.kmi.ifBlank { deviceKmi() }) ?: return null
+        val file = File(ksuApp.cacheDir, "kernelsu-bundled-lkm.ko")
+        ksuApp.assets.open(asset).use { input ->
+            file.outputStream().use { output -> input.copyTo(output) }
+        }
+        return file
+    }
     if (lkm !is LkmSelection.LkmUri) return null
     val file = File(ksuApp.cacheDir, "kernelsu-tmp-lkm.ko")
     ksuApp.contentResolver.openInputStream(lkm.uri)?.use { input ->
@@ -382,11 +419,15 @@ fun installBoot(
         cmd += " -u"
     }
 
-    val lkmFile = writeLkmFile(lkm)
+    val effectiveLkm = if (lkm == LkmSelection.KmiNone) LkmSelection.Bundled() else lkm
+    val lkmFile = writeLkmFile(effectiveLkm)
     if (lkmFile != null) {
         cmd += " -m ${lkmFile.absolutePath}"
-    } else if (lkm is LkmSelection.KmiString) {
-        cmd += " --kmi ${lkm.value}"
+    } else if (effectiveLkm is LkmSelection.KmiString) {
+        cmd += " --kmi ${effectiveLkm.value}"
+    } else if (effectiveLkm is LkmSelection.Bundled) {
+        bootFile?.delete()
+        return FlashResult(-1, "Unsupported KMI for bundled LKM", false)
     }
 
     if (bootFile != null) {
@@ -464,26 +505,36 @@ fun downloadBoot(
     // init_boot/vendor_boot carry no kernel, so their KMI comes from the
     // payload's boot probe and must be passed explicitly. A remote download
     // is unrelated to this device, so ksud must not use the local kernel.
-    val autoKmi = if (lkm is LkmSelection.KmiNone) {
+    val usesBundled = lkm == LkmSelection.KmiNone || (lkm is LkmSelection.Bundled && lkm.kmi.isBlank())
+    val autoKmi = if (usesBundled) {
         (probedKmi ?: BootKernelVersion.parseKmiFromBoot(bootFile))?.also {
             onStdout("- Auto detected KMI: $it")
         }
     } else {
         null
     }
-    if (autoKmi == null && lkm is LkmSelection.KmiNone) {
+    if (autoKmi == null && usesBundled) {
         bootFile.delete()
         return FlashResult(-1, "Failed to determine KMI from the package", false)
+    }
+
+    val effectiveLkm = when {
+        lkm == LkmSelection.KmiNone -> LkmSelection.Bundled(autoKmi.orEmpty())
+        lkm is LkmSelection.Bundled && lkm.kmi.isBlank() -> LkmSelection.Bundled(autoKmi.orEmpty())
+        else -> lkm
     }
 
     var cmd = "${getKsuDaemonPath()} boot-patch -b ${bootFile.absolutePath}"
     cmd += bootPatchFlags(allowShell, enableAdb, forceBackup, blockModules)
 
-    val lkmFile = writeLkmFile(lkm)
+    val lkmFile = writeLkmFile(effectiveLkm)
     if (lkmFile != null) {
         cmd += " -m ${lkmFile.absolutePath}"
-    } else if (lkm is LkmSelection.KmiString) {
-        cmd += " --kmi ${lkm.value}"
+    } else if (effectiveLkm is LkmSelection.KmiString) {
+        cmd += " --kmi ${effectiveLkm.value}"
+    } else if (effectiveLkm is LkmSelection.Bundled) {
+        bootFile.delete()
+        return FlashResult(-1, "Unsupported KMI for bundled LKM", false)
     }
     if (autoKmi != null) cmd += " --kmi $autoKmi"
     cmd += " --partition $partition"

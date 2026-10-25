@@ -238,7 +238,7 @@
     <string name="jailbreak_flash_warning_countdown">继续 (%1$d)</string>
     <string name="install_next">下一步</string>
     <string name="install_select_partition">选择分区</string>
-    <string name="install_upload_lkm_file">使用本地 LKM 文件</string>
+    <string name="install_upload_lkm_file">LKM（默认内置，可替换）</string>
     <string name="install_only_support_ko_file">仅支持选择 .ko 文件</string>
     <string name="select_file_tip">建议选择 %1$s 分区镜像</string>
     <string name="select_kmi">选择 KMI</string>
@@ -253,6 +253,7 @@
     <string name="flash_success">刷写完成</string>
     <string name="flash_failed">刷写失败</string>
     <string name="selected_lkm">已选择的 LKM：%s</string>
+    <string name="install_bundled_lkm">已启用内置大肥鱼 LKM（免导入）</string>
     <string name="save_log">保存日志</string>
     <string name="log_saved">日志已保存</string>
     <string name="settings_mode_enable_by_default">启用（默认）</string>
